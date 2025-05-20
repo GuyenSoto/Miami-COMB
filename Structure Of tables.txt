@@ -1,4 +1,4 @@
-I am sending you the structure and data of the source database (OLTP), GymSourceDataOLTP, and the destination database (OLAP), GITWorldGym.
+Structure and data of the source database (OLTP), GymSourceDataOLTP, and the destination database (OLAP), GITWorldGym.
 
 OLTP Sources (GymSpurceDataOLTP):
 CREATE TABLE [dbo].[Member](
