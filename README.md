@@ -1,33 +1,4 @@
-## Troubleshooting Common Issues
-
-### Foreign Key Constraints
-If you encounter foreign key constraint errors during fact table loading, ensure:
-1. Dimension tables are fully loaded before the fact table
-2. Special member IDs (like event codes) are properly included in DimMember
-3. All product codes exist in DimProduct
-
-### Missing Members
-Some member IDs might come from unexpected sources. The updated ETL process handles:
-- Regular members from the Member table
-- One-day guest pass users
-- Sales transaction customers
-- Special event type codes used as member references
-
-### Data Integrity Verification
-Use these queries to verify data integrity:
- sql
-### Verify all members referenced in transactions exist in DimMember
-SELECT DISTINCT FT.MemberID 
-FROM FactTransactions FT
-LEFT JOIN DimMember DM ON FT.MemberID = DM.MemberID
-WHERE DM.MemberID IS NULL;
-
-### Verify all products referenced in transactions exist in DimProduct
-SELECT DISTINCT FT.ProductID 
-FROM FactTransactions FT
-LEFT JOIN DimProduct DP ON FT.ProductID = DP.ProductID
-WHERE DP.ProductID IS NULL;
- # FIT-WORLD GYM ETL & Data Warehouse Project
+# FIT-WORLD GYM ETL & Data Warehouse Project
 
 ## Project Overview
 
@@ -120,11 +91,11 @@ The project includes Power BI dashboard files for visual analytics:
 1. Restore the GymSourceDataOLTP database from the provided .bak file
 2. Execute the schema creation scripts for the FITWorldGym data warehouse
 3. Run the ETL procedures in the following order:
-    sql
+   ```sql
    EXEC sp_FillDimMember;
    EXEC sp_FillDimProduct;
    EXEC sp_FillFactTransactions;
-    
+   ```
 4. Execute the analytical queries to verify data
 5. Open the Power BI dashboard to visualize the results
 
@@ -132,7 +103,7 @@ The project includes Power BI dashboard files for visual analytics:
 
 If you need to reset the data warehouse and reload it from scratch:
 
- sql
+```sql
 USE [FITWorldGym]
 GO
 
@@ -157,22 +128,53 @@ ALTER TABLE [dbo].[FactTransactions] CHECK CONSTRAINT ALL;
 EXEC sp_FillDimMember;
 EXEC sp_FillDimProduct;
 EXEC sp_FillFactTransactions;
- 
+```
+
+## Troubleshooting Common Issues
+
+### Foreign Key Constraints
+If you encounter foreign key constraint errors during fact table loading, ensure:
+1. Dimension tables are fully loaded before the fact table
+2. Special member IDs (like event codes) are properly included in DimMember
+3. All product codes exist in DimProduct
+
+### Missing Members
+Some member IDs might come from unexpected sources. The updated ETL process handles:
+- Regular members from the Member table
+- One-day guest pass users
+- Sales transaction customers
+- Special event type codes used as member references
+
+### Data Integrity Verification
+Use these queries to verify data integrity:
+```sql
+-- Verify all members referenced in transactions exist in DimMember
+SELECT DISTINCT FT.MemberID 
+FROM FactTransactions FT
+LEFT JOIN DimMember DM ON FT.MemberID = DM.MemberID
+WHERE DM.MemberID IS NULL;
+
+-- Verify all products referenced in transactions exist in DimProduct
+SELECT DISTINCT FT.ProductID 
+FROM FactTransactions FT
+LEFT JOIN DimProduct DP ON FT.ProductID = DP.ProductID
+WHERE DP.ProductID IS NULL;
+```
 
 ## Query Examples
 
 ### Revenue by Category
- sql
+```sql
 SELECT 
     SUM(f.amount) AS Revenue,
     p.ProductType AS Category  
 FROM FactTransactions f 
 JOIN DimProduct p ON f.ProductID = p.ProductID
 GROUP BY p.ProductType;
- 
+```
 
 ### Total Revenue
- sql
+```sql
 WITH CTE_Revenue AS (
     SELECT 
         SUM(f.amount) AS Revenue, 
@@ -184,7 +186,7 @@ WITH CTE_Revenue AS (
 
 SELECT SUM(Revenue) AS TotalRevenue
 FROM CTE_Revenue;
- 
+```
 
 ## Deliverables
 
