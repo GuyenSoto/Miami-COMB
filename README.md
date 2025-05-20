@@ -16,13 +16,13 @@ Some member IDs might come from unexpected sources. The updated ETL process hand
 ### Data Integrity Verification
 Use these queries to verify data integrity:
  sql
--- Verify all members referenced in transactions exist in DimMember
+### Verify all members referenced in transactions exist in DimMember
 SELECT DISTINCT FT.MemberID 
 FROM FactTransactions FT
 LEFT JOIN DimMember DM ON FT.MemberID = DM.MemberID
 WHERE DM.MemberID IS NULL;
 
--- Verify all products referenced in transactions exist in DimProduct
+### Verify all products referenced in transactions exist in DimProduct
 SELECT DISTINCT FT.ProductID 
 FROM FactTransactions FT
 LEFT JOIN DimProduct DP ON FT.ProductID = DP.ProductID
